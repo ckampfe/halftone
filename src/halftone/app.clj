@@ -60,33 +60,33 @@
 
     ;; CYAN
     (q/with-fill [10 120 200 190]
-      (doseq [starter (take 50 (dotvector-seq2 0 0 -30 12))
-              {:keys [x y]} (take 50 (dotvector-seq (:x starter) (:y starter) 60 12))]
-        (q/ellipse x y 5 5))
+      (doseq [starter (take 100 (dotvector-seq2 0 0 -30 8))
+              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 60 8))]
+        (q/ellipse x y 3 3))
 
-      (doseq [starter (take 50 (drop 1 (dotvector-seq2 0 0 150 12)))
-              {:keys [x y]} (take 100 (dotvector-seq (:x starter) (:y starter) 60 12))]
-        (q/ellipse x y 5 5)))
+      (doseq [starter (take 100 (drop 1 (dotvector-seq2 0 0 150 8)))
+              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 60 8))]
+        (q/ellipse x y 3 3)))
 
     ;; MAGENTA
     (q/with-fill [200 10 100 190]
-      (doseq [starter (take 50 (dotvector-seq2 0 0 -45 12))
-              {:keys [x y]} (take 100 (dotvector-seq (:x starter) (:y starter) 45 12))]
-        (q/ellipse x y 5 5))
+      (doseq [starter (take 100 (dotvector-seq2 0 0 -45 8))
+              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 45 8))]
+        (q/ellipse x y 3 3))
 
-      (doseq [starter (take 50 (drop 1 (dotvector-seq2 0 0 135 12)))
-              {:keys [x y]} (take 100 (dotvector-seq (:x starter) (:y starter) 45 12))]
-        (q/ellipse x y 5 5)))
+      (doseq [starter (take 100 (drop 1 (dotvector-seq2 0 0 135 8)))
+              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 45 8))]
+        (q/ellipse x y 3 3)))
 
     ;; YELLOW
     (q/with-fill [250 200 10 190]
-      (doseq [starter (take 50 (dotvector-seq2 0 0 -15 12))
-              {:keys [x y]} (take 100 (dotvector-seq (:x starter) (:y starter) 75 12))]
-        (q/ellipse x y 5 5))
+      (doseq [starter (take 100 (dotvector-seq2 0 0 -15 8))
+              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 75 8))]
+        (q/ellipse x y 3 3))
 
-      (doseq [starter (take 50 (drop 1 (dotvector-seq2 0 0 165 12)))
-              {:keys [x y]} (take 100 (dotvector-seq (:x starter) (:y starter) 75 12))]
-        (q/ellipse x y 5 5)))
+      (doseq [starter (take 100 (drop 1 (dotvector-seq2 0 0 165 8)))
+              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 75 8))]
+        (q/ellipse x y 3 3)))
 
     (catch Exception e (pr-str (.toString e)))))
 
