@@ -52,6 +52,10 @@
              {:x x
               :y y})))
 
+(def dot-distance 120)
+
+(def dot-size 70)
+
 (defn setup []
   (try
     (q/background 255)
@@ -60,39 +64,49 @@
 
     ;; CYAN
     (q/with-fill [10 120 200 190]
-      (doseq [starter (take 100 (dotvector-seq2 0 0 -30 8))
-              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 60 8))]
-        (q/ellipse x y 3 3))
+      (doseq [starter (take 100 (dotvector-seq2 -33 -33 -30 dot-distance))
+              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 60 dot-distance))]
+        (q/ellipse x y dot-size dot-size))
 
-      (doseq [starter (take 100 (drop 1 (dotvector-seq2 0 0 150 8)))
-              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 60 8))]
-        (q/ellipse x y 3 3)))
+      (doseq [starter (take 100 (drop 1 (dotvector-seq2 -33 -33 150 dot-distance)))
+              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 60 dot-distance))]
+        (q/ellipse x y dot-size dot-size)))
 
     ;; MAGENTA
     (q/with-fill [200 10 100 190]
-      (doseq [starter (take 100 (dotvector-seq2 0 0 -45 8))
-              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 45 8))]
-        (q/ellipse x y 3 3))
+      (doseq [starter (take 100 (dotvector-seq2 -33 -33 -45 dot-distance))
+              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 45 dot-distance))]
+        (q/ellipse x y dot-size dot-size))
 
-      (doseq [starter (take 100 (drop 1 (dotvector-seq2 0 0 135 8)))
-              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 45 8))]
-        (q/ellipse x y 3 3)))
+      (doseq [starter (take 100 (drop 1 (dotvector-seq2 -33 -33 135 dot-distance)))
+              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 45 dot-distance))]
+        (q/ellipse x y dot-size dot-size)))
 
-    ;; YELLOW
-    (q/with-fill [250 200 10 190]
-      (doseq [starter (take 100 (dotvector-seq2 0 0 -15 8))
-              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 75 8))]
-        (q/ellipse x y 3 3))
+      ;; YELLOW
+      (q/with-fill [250 200 10 190]
+        (doseq [starter (take 100 (dotvector-seq2 -33 -33 -15 dot-distance))
+                {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 75 dot-distance))]
+          (q/ellipse x y dot-size dot-size))
 
-      (doseq [starter (take 100 (drop 1 (dotvector-seq2 0 0 165 8)))
-              {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 75 8))]
-        (q/ellipse x y 3 3)))
+        (doseq [starter (take 100 (drop 1 (dotvector-seq2 -33 -33 165 dot-distance)))
+                {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 75 dot-distance))]
+          (q/ellipse x y dot-size dot-size)))
+
+      ;; BLACK/KEY
+      (q/with-fill [0 0 0 45]
+        (doseq [starter (take 100 (dotvector-seq2 -33 -33 20 dot-distance))
+                {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 110 dot-distance))]
+          (q/ellipse x y dot-size dot-size))
+
+        (doseq [starter (take 100 (drop 1 (dotvector-seq2 -33 -33 200 dot-distance)))
+                {:keys [x y]} (take 200 (dotvector-seq (:x starter) (:y starter) 110 dot-distance))]
+          (q/ellipse x y dot-size dot-size)))
 
     (catch Exception e (pr-str (.toString e)))))
 
 (try (q/defsketch example
        :title "halftone"
-       :settings #(q/smooth 2)
+       :settings #(q/smooth 8)
        :setup setup
        :size [800 500])
      (catch Exception e
