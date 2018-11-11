@@ -52,7 +52,11 @@
 (defn draw-dots [rgba angle dot-size dot-distance width height & opts]
   (let [start-pos -33
         angle-2 (- angle 90)
-        angle-3 (+ angle 90)]
+        angle-3 (+ angle 90)
+        boundary-predicate (fn [{:keys [x y]}]
+                             (and (not (> x (+ width dot-distance)))
+                                  (not (> y (+ height dot-distance)))))]
+
     (q/with-fill rgba
       (doseq [starter (take 100 (dotvector-seq2 (if (> angle-3 180)
                                                   (+ width start-pos)
@@ -60,10 +64,12 @@
                                                 start-pos
                                                 angle-2
                                                 dot-distance))
-              {:keys [x y]} (take 200 (dotvector-seq (:x starter)
-                                                     (:y starter)
-                                                     angle
-                                                     dot-distance))]
+              {:keys [x y]} (take-while
+                             boundary-predicate
+                             (dotvector-seq (:x starter)
+                                            (:y starter)
+                                            angle
+                                            dot-distance))]
         (q/ellipse x
                    y
                    dot-size
@@ -75,10 +81,12 @@
                                                         start-pos
                                                         angle-3
                                                         dot-distance)))
-              {:keys [x y]} (take 200 (dotvector-seq (:x starter)
-                                                     (:y starter)
-                                                     angle
-                                                     dot-distance))]
+              {:keys [x y]} (take-while
+                             boundary-predicate
+                             (dotvector-seq (:x starter)
+                                            (:y starter)
+                                            angle
+                                            dot-distance))]
         (q/ellipse x
                    y
                    dot-size
@@ -90,23 +98,23 @@
 
 (defn draw []
   (let [cyan (future
-               (q/with-graphics ^PGraphicsSVG (q/create-graphics 800 500 :svg "cyan2.svg")
+               (q/with-graphics ^PGraphicsSVG (q/create-graphics 800 500 :svg "cyan3.svg")
                  (q/no-stroke)
                  (draw-dots [10 120 200 190] 60 dot-size dot-distance 800 500)))
 
-        magenta (future (q/with-graphics ^PGraphicsSVG (q/create-graphics 800 500 :svg "magenta2.svg")
+        magenta (future (q/with-graphics ^PGraphicsSVG (q/create-graphics 800 500 :svg "magenta3.svg")
                           (q/no-stroke)
                           (draw-dots [200 10 100 190] 45 dot-size dot-distance 800 500)))
 
-        yellow (future (q/with-graphics ^PGraphicsSVG (q/create-graphics 800 500 :svg "yellow2.svg")
+        yellow (future (q/with-graphics ^PGraphicsSVG (q/create-graphics 800 500 :svg "yellow3.svg")
                          (q/no-stroke)
                          (draw-dots [250 200 10 190] 75 dot-size dot-distance 800 500)))
 
-        black (future (q/with-graphics ^PGraphicsSVG (q/create-graphics 800 500 :svg "black2.svg")
+        black (future (q/with-graphics ^PGraphicsSVG (q/create-graphics 800 500 :svg "black3.svg")
                         (q/no-stroke)
                         (draw-dots [0 0 0 45] 110 dot-size dot-distance 800 500)))
 
-        all (future (q/with-graphics ^PGraphicsSVG (q/create-graphics 800 500 :svg "all.svg")
+        all (future (q/with-graphics ^PGraphicsSVG (q/create-graphics 800 500 :svg "all3.svg")
                       (q/no-stroke)
                       ;; cyan
                       (draw-dots [10 120 200 190] 60 dot-size dot-distance 800 500)
