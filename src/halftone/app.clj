@@ -70,27 +70,37 @@
                                             (:y starter)
                                             angle
                                             dot-distance))]
-        (q/ellipse x
-                   y
-                   dot-size
-                   dot-size))
+        (when (and (< x (+ width dot-size))
+                   (> x start-pos)
+                   (< y (+ height dot-size))
+                   (> y start-pos))
+          (q/ellipse x
+                     y
+                     dot-size
+                     dot-size)))
 
-      (doseq [starter (take 100 (drop 1 (dotvector-seq2 (if (> angle-3 180)
-                                                          (+ width start-pos)
-                                                          start-pos)
-                                                        start-pos
-                                                        angle-3
-                                                        dot-distance)))
+      (doseq [starter (->> (dotvector-seq2 (if (> angle-3 180)
+                                             (+ width start-pos)
+                                             start-pos)
+                                           start-pos
+                                           angle-3
+                                           dot-distance)
+                           (drop 1)
+                           (take 100))
               {:keys [x y]} (take-while
                              boundary-predicate
                              (dotvector-seq (:x starter)
                                             (:y starter)
                                             angle
                                             dot-distance))]
-        (q/ellipse x
-                   y
-                   dot-size
-                   dot-size)))))
+        (when (and (< x (+ width dot-size))
+                   (> x start-pos)
+                   (< y (+ height dot-size))
+                   (> y start-pos))
+          (q/ellipse x
+                     y
+                     dot-size
+                     dot-size))))))
 
 (defn setup []
   (q/background 255)
