@@ -1,7 +1,10 @@
 {:paths ["resources" "src"]
- :deps {org.clojure/clojure {:mvn/version "1.10.0-beta5"}
+ :deps {org.clojure/clojure {:mvn/version "1.10.0-beta8"}
         quil {:mvn/version "2.7.1"
-              :exclusions [com.lowagie/itext]}}
+              :exclusions [com.lowagie/itext]}
+        net.mikera/core.matrix {:mvn/version "0.62.0"}
+        net.mikera/vectorz-clj {:mvn/version "0.48.0"}
+        }
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps {org.clojure/test.check {:mvn/version "RELEASE"}}}
