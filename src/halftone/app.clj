@@ -46,8 +46,63 @@
              {:x x
               :y y})))
 
+(defn sample [x y w h]
+  (q/get-pixel x y w h))
+
 (def dot-distance 120)
 (def dot-size 70)
+
+(defn dotseq [rgba angle dot-size dot-distance width height & opts]
+  (let [start-pos -33
+        angle-2 (- angle 90)
+        angle-3 (+ angle 90)
+        boundary-predicate (fn [{:keys [x y]}]
+                             (and (not (> x (+ width dot-distance)))
+                                  (not (> y (+ height dot-distance)))))
+
+        ds1 (for [starter (take 100 (dotvector-seq2 (if (> angle-3 180)
+                                                      (+ width start-pos)
+                                                      start-pos)
+                                                    start-pos
+                                                    angle-2
+                                                    dot-distance))
+                  {:keys [x y]} (take-while
+                                 boundary-predicate
+                                 (dotvector-seq (:x starter)
+                                                (:y starter)
+                                                angle
+                                                dot-distance))
+                  :when (and (< x (+ width dot-size))
+                             (> x start-pos)
+                             (< y (+ height dot-size))
+                             (> y start-pos))]
+              {:x x
+               :y y})
+
+        ds2 (for [starter (->> (dotvector-seq2 (if (> angle-3 180)
+                                                 (+ width start-pos)
+                                                 start-pos)
+                                               start-pos
+                                               angle-3
+                                               dot-distance)
+                               (drop 1)
+                               (take 100))
+                  {:keys [x y]} (take-while
+                                 boundary-predicate
+                                 (dotvector-seq (:x starter)
+                                                (:y starter)
+                                                angle
+                                                dot-distance))
+                  :when (and (< x (+ width dot-size))
+                       (> x start-pos)
+                       (< y (+ height dot-size))
+                       (> y start-pos))
+
+                  ]
+                {:x x
+                 :y y})]
+
+    (concat ds1 ds2)))
 
 (defn draw-dots [rgba angle dot-size dot-distance width height & opts]
   (let [start-pos -33
@@ -112,9 +167,12 @@
                  (q/no-stroke)
                  (draw-dots [10 120 200 190] 60 dot-size dot-distance 800 500)))
 
-        magenta (future (q/with-graphics ^PGraphicsSVG (q/create-graphics 800 500 :svg "magenta3.svg")
+        magenta (future (q/with-graphics ^PGraphicsSVG (q/create-graphics 800 500 :svg "magenta4.svg")
                           (q/no-stroke)
-                          (draw-dots [200 10 100 190] 45 dot-size dot-distance 800 500)))
+                          (let [dots (dotseq [200 10 100 190] 45 dot-size dot-distance 800 500)]
+                            (q/with-fill [200 10 100 190]
+                              (doseq [{:keys [x y]} dots]
+                               (q/ellipse x y dot-size dot-size))))))
 
         yellow (future (q/with-graphics ^PGraphicsSVG (q/create-graphics 800 500 :svg "yellow3.svg")
                          (q/no-stroke)
@@ -149,7 +207,7 @@
        :draw draw
        :size [800 500]
        :renderer :svg
-       :output-file "out5.svg"
+       :output-file "out6.svg"
        :features [:no-bind-output])
      (catch Exception e
        (println e)))
