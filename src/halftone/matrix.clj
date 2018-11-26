@@ -9,91 +9,82 @@
 (def xdim 1000)
 (def ydim 1000)
 
-(def angle 45)
+(defn counter-clockwise-rotation [^double angle-degrees]
+  (let [angle-radians (Math/toRadians angle-degrees)]
+    (m/array [[(Math/cos angle-radians)     (Math/sin angle-radians) 0]
+              [(- (Math/sin angle-radians)) (Math/cos angle-radians) 0]
+              [0                            0                        1]])))
 
-(def theta (Math/toRadians angle))
-
-;; coun
-
-(def clockwise-rot (m/array [[(Math/cos theta)     (Math/sin theta) 0]
-                             [(- (Math/sin theta)) (Math/cos theta) 0]
-                             [0                    0                1]]))
-
-(def ccw-rot (m/array [[(Math/cos theta) (- (Math/sin theta)) 0]
-                       [(Math/sin theta) (Math/cos theta)     0]
-                       [0                0                    1]]))
+(defn clockwise-rotation [^double angle-degrees]
+  (let [angle-radians (Math/toRadians angle-degrees)]
+    (m/array [[(Math/cos angle-radians) (- (Math/sin angle-radians)) 0]
+              [(Math/sin angle-radians) (Math/cos angle-radians)     0]
+              [0                        0                            1]])))
 
 (defn translation [x y]
   (m/array [[1 0 x]
             [0 1 y]
             [0 0 1]]))
 
-(defn build-rot [x y]
-  (let [t1 (translation x y)
-        t2 (translation (- x) (- y))
-        rot clockwise-rot]
+(defn build-rotation
+  "Build a rotation, that when applied to another matrix,
+  will rotate that matrix around a given point (x,y)"
+  [center-x center-y rotation-matrix]
+  (let [translation-1 (translation center-x center-y)
+        translation-2 (translation (- center-x) (- center-y))]
+    (m/transpose (m/mmul translation-1 rotation-matrix translation-2))))
 
-    (m/mmul t1 rot t2)))
+(defn bounding-box-side
+  "compute the side length of the bounding box"
+  [^double source-width ^double source-height]
+  (+ (/ source-width (Math/sqrt 2))
+     (/ source-height (Math/sqrt 2))))
 
-(def rot-in-place (build-rot 500 500))
-
-(def xys (m/array [40 40 1]))
-
-(def inputm (time (m/array (for [^double y (range 300 740 40)
-                            ^double x (range 300 740 40)]
-                        [x y 1]))))
-
-(def bounding-box (m/array (for [y (range (- 500 (/ 566 2))
-                                          (+ 500 (/ 566 2))
-                                          40)
-                                 x (range (- 500 (/ 566 2))
-                                          (+ 500 (/ 566 2))
-                                          40)]
-                             (m/array [x y 1]))))
+(defn bounding-box-dots [source-width source-height center-x center-y dot-spacing]
+  "source-width and source-height are the box for which we are computing the bounding box.
+   center-x and y is the xy point that represents the center of the source box.
+   dot spacing is the space between dots, in pixels."
+  (let [bb-side (bounding-box-side source-width source-height)
+        bb-side-over-2 (/ bb-side 2)]
+    (m/array (for [y (range (- center-y bb-side-over-2)
+                            (+ center-y bb-side-over-2)
+                            dot-spacing)
+                   x (range (- center-x bb-side-over-2)
+                            (+ center-x bb-side-over-2)
+                            dot-spacing)]
+               (m/array [x y 1])))))
 
 (defn setup []
   (q/background 255)
   (q/no-loop))
 
 (defn draw []
+
   (q/no-stroke)
-  (q/with-fill [0 0 0]
-    (q/text (.toString ^Long angle) 40 40))
 
-  ;; blue
-  #_(q/with-fill [0 0 200]
-      (doseq [[x y] (into [] (map (fn [v] (into [] v)) (m/mmul inputm rot-in-place #_inputm)))]
-        (q/ellipse x y 10 10)))
+  (let [angle 10 ;; degrees
+        center-x 500
+        center-y 500
+        bounding-box (bounding-box-dots 400 400 500 500 40)
+        rot-in-place (build-rotation center-x center-y (counter-clockwise-rotation angle))
+        inputm (m/array (for [y (range 300 740 40)
+                              x (range 300 740 40)]
+                          [x y 1]))]
 
+    (q/with-fill [0 0 0]
+      (q/text (str angle) 40 40))
 
-  #_(m/mmul bounding-box rot-in-place)
+    (q/with-fill [0 200 200]
+      (time (doseq [v (m/mmul bounding-box rot-in-place)]
+              (q/ellipse (m/mget v 0) ;; x
+                         (m/mget v 1) ;; y
+                         10 10))))
 
-  #_(m/shape rot-in-place)
-
-  #_(m/mmul (take 3 bounding-box) (m/transpose rot-in-place))
-
-  #_(q/with-fill [0 200 200]
-    (time (doseq [[x y] (into [] (map (fn [v] (into [] v)) #_(time (m/mmul bounding-box (m/transpose rot-in-place)))
-                                      (map (fn [v] (m/mmul rot-in-place v))
-                                           bounding-box)))]
-
-       (q/ellipse x y 10 10))))
-
-  (q/with-fill [0 200 200]
-    (time (doseq [v (m/mmul bounding-box (m/transpose rot-in-place))] ;; note that rot-in-place is transposed, not sure why it has to be that way
-
-       (q/ellipse (m/mget v 0) ;; x
-                  (m/mget v 1) ;; y
-                  10 10))))
-
-  ; red
-  (q/with-fill [250 180 80]
-    (doseq [[x y] (into [] (map (fn [v] (into [] v))
-                                inputm))]
-      (q/ellipse x y 10 10))))
-
-#_(into [] (map (fn [v] (into [] v))
-                inputm))
+    ;; red
+    (q/with-fill [250 180 80]
+      (doseq [[x y] (into [] (map (fn [v] (into [] v))
+                                  inputm))]
+        (q/ellipse x y 10 10)))))
 
 (try (q/defsketch example
        :title "m"
