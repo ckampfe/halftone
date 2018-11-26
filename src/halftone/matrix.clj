@@ -37,8 +37,10 @@
 (defn bounding-box-side
   "compute the side length of the bounding box"
   [^double source-width ^double source-height]
-  (+ (/ source-width (Math/sqrt 2))
-     (/ source-height (Math/sqrt 2))))
+  (let [greater-side (if (> source-width source-height)
+                       source-width
+                       source-height)]
+    (* 2 (Math/ceil ^double (/ greater-side (Math/sqrt 2))))))
 
 (defn bounding-box-dots [source-width source-height center-x center-y dot-spacing]
   "source-width and source-height are the box for which we are computing the bounding box.
