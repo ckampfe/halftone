@@ -34,9 +34,9 @@
 
         yellow (clamp-to-one (/ (- 1 (- blue black))
                                 minus-one-black))]
-    {:c cyan
-     :m magenta
-     :y yellow
+    {:cyan cyan
+     :magenta magenta
+     :yellow yellow
      :k black}))
 
 (defn normalize-color-value-to-1 [n]
